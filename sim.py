@@ -19,14 +19,11 @@ def noop(pos, vel, angle): ...
 
 class RocketSimulator:
     def __init__(
-            self,
-            random_coords: bool = True,
-            step_hook: callable = noop,
-            config: RocketConfig = RocketConfig()
+        self,
+        step_hook: callable = noop,
+        config: RocketConfig = RocketConfig(disable_random_coords=False),
     ):
         """
-        :param bool random_coords: should `.reset()` function
-               set rocket position to random values (default: True)
         :param callable step_hook: hook that gets executed after each step invocation
         """
         # bounds of sim (rocket shouldn't exceed these coords)
@@ -37,7 +34,6 @@ class RocketSimulator:
             ]
         )
         self.config = config
-        self.random_coords = random_coords
         self.step_hook = step_hook
         self.reset()
 
@@ -46,21 +42,7 @@ class RocketSimulator:
         Resets simulation to random starting positions.
         """
 
-        if self.random_coords:
-            self.starting_position = np.array(
-                [0, random.randint(60, 125)], dtype=np.float32
-            )
-            self.position = np.copy(self.starting_position)
-
-            self.target_position = np.array([0, 0], dtype=np.float32)
-            self.velocity = np.array(
-                [0, -(random.randint(5, 25))], dtype=np.float32
-            )  # x, y
-
-            self.angle = 0  # deg_to_rad(random.randint(-65, 65))
-            self.fuel = self.config.fuel
-
-        else:
+        if self.config.disable_random_coords:
             self.starting_position = np.array([0, 100], dtype=np.float32)
             self.position = np.copy(self.starting_position)
 
@@ -68,6 +50,27 @@ class RocketSimulator:
             self.velocity = np.array([0, 0], dtype=np.float32)  # x, y
 
             self.angle = 0
+            self.fuel = self.config.fuel
+
+        else:
+            self.starting_position = np.array(
+                [
+                    random.randint(*self.config.starting_position_x),
+                    random.randint(*self.config.starting_position_y),
+                ],
+                dtype=np.float32,
+            )
+            self.position = np.copy(self.starting_position)
+
+            self.target_position = np.array([0, 0], dtype=np.float32)
+            self.velocity = np.array(
+                [0, -(random.randint(*self.config.starting_velocity_range))],
+                dtype=np.float32,
+            )  # x, y
+
+            self.angle = (
+                0  # deg_to_rad(random.randint(*self.config.starting_angle_range))
+            )
             self.fuel = self.config.fuel
 
         self.angular_velocity = 0
@@ -96,7 +99,7 @@ class RocketSimulator:
             self.velocity[1] += np.cos(self.angle) * accel * self.time_step
 
             self.fuel -= min(
-                self.config.burn_rate * self.time_step * max(0., thrust), self.fuel
+                self.config.burn_rate * self.time_step * max(0.0, thrust), self.fuel
             )
 
         self.position += self.velocity * self.time_step
@@ -110,10 +113,10 @@ class RocketSimulator:
         """
 
         return (
-                self.position[1] < 0
-                or not (self.bounds[0][0] <= self.position[0] <= self.bounds[0][1])
-                or not (self.bounds[1][0] <= self.position[1] <= self.bounds[1][1])
-                or self.time_elapsed > 256
+            self.position[1] < 0
+            or not (self.bounds[0][0] <= self.position[0] <= self.bounds[0][1])
+            or not (self.bounds[1][0] <= self.position[1] <= self.bounds[1][1])
+            or self.time_elapsed > 256
         )
 
     def reward(self) -> int:
@@ -121,9 +124,9 @@ class RocketSimulator:
         :return int: returns reward (1 - if landed properly, 0 - if not)
         """
         if (
-                self.position[1] < 0.1
-                # and abs(self.position[0] - self.target_position[0]) <= 5
-                and abs(self.velocity[1]) <= 10
+            self.position[1]
+            < 0.1  # and abs(self.position[0] - self.target_position[0]) <= 5
+            and abs(self.velocity[1]) <= 40
         ):
             return 1
 
@@ -163,11 +166,9 @@ def logger(pos, vel, angle):
 if __name__ == "__main__":
     dump = make_dumper()
 
-
     def hook(*data):
         logger(*data)
         dump(*data)
-
 
     sim = RocketSimulator(random_coords=False, step_hook=hook)
     sim.reset()
