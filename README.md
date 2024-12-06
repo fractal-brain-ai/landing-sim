@@ -1,8 +1,11 @@
-## Starship Simulator - Docs
+## Rocket Simulator - Docs
 
 # Setting up
 
-Construct environment using RocketSimulator's class, use `random_coords: bool` param to specify if each `.reset()` call should reset rocket's position to random values.
+Construct environment using RocketConfig's class, use `disable_random_coords: bool` param to specify if each `.reset()` call should reset rocket's position to random values (values that can be changed in config.py).
+## Rocket Landing Simulation Configuration
+
+Adjust all rocket and environment parameters in the RocketConfig (We recommend using simple data at the beginning)
 
 > [!NOTE]
 > `RocketSimulator` requires `numpy>=2.1.2` to be installed.
