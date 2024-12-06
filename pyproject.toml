@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "landing-sim"
+version = "0.1.0"
+description = "An environment for RL algos to learn how to land a rocket"
+authors = ["Max Cyprys <max@m87.tech>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^2.1.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
