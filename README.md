@@ -1,4 +1,5 @@
 ## Rocket Simulator - Docs
+![Rocket-landing](https://cdn.m87.tech/rocket-1.png)
 
 # Setting up
 
@@ -68,4 +69,4 @@ sim = RocketSimulator(step_hook=make_dumper())
 
 If you'll send us the results, we can render you a preview of your own Starship landing. Here's a preview how the final render can look like:
 
-[https://fractalbrain.ai/rockets/r4.mp4](https://fractalbrain.ai/rockets/r4.mp4) landing-sim
+[Example video](https://fractalbrain.ai/rockets/r4.mp4) of a rocket landing
