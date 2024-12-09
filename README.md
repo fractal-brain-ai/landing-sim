@@ -16,7 +16,7 @@ Adjust all rocket and environment parameters in the RocketConfig (We recommend u
 For each model output call `.step()` function with following params:
 
 * `thrust` - value ranging from 0 to 1, how much thrust to apply in one sim tick (defined by `thrust * self.max_thrust`),
-* `rotation` - action ranging from -1 to 1, how much to rotate the ship
+* `normalized_torque` - action ranging from -1 to 1, how much to rotate the ship
 
 
 #### Callbacks

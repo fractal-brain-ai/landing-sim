@@ -77,18 +77,18 @@ class RocketSimulator:
         self.time_elapsed = 0
         self.time_step = 0.1
 
-    def step(self, thrust: float, rotation: float):
+    def step(self, thrust: float, normalized_torque: float):
         """
-        Steps through the simulation with given thrust and rotation angle.
+        Steps through the simulation with given thrust and normalized_torque angle.
 
         :param float thrust: Thrust value (bound between 0 and 1)
-        :param float rotation: Rotation angle value (bound between -1 and 1)
+        :param float normalized_torque: normalized_torque angle value (bound between -1 and 1)
         """
 
         thrust = clamp(0, thrust, 1)
-        rotation = clamp(-1, rotation, 1)
+        normalized_torque = clamp(-1, normalized_torque, 1)
 
-        self.angular_velocity += rotation * self.time_step
+        self.angular_velocity += normalized_torque * self.time_step
         self.angle += self.angular_velocity * self.time_step
 
         self.velocity[1] -= G * self.time_step
